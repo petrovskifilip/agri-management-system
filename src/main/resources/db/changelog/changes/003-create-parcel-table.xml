@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3" author="filip.petrovski">
+        <sql>
+            CREATE TABLE parcel
+            (
+                id        BIGSERIAL PRIMARY KEY,
+                name      VARCHAR(255) NOT NULL,
+                latitude  DOUBLE PRECISION,
+                longitude DOUBLE PRECISION,
+                area      DOUBLE PRECISION,
+                farm_id   BIGINT       NOT NULL,
+                crop_id   BIGINT,
+
+                CONSTRAINT fk_parcel_farm
+                    FOREIGN KEY (farm_id)
+                        REFERENCES farm (id)
+                        ON DELETE CASCADE,
+
+                CONSTRAINT fk_parcel_crop
+                    FOREIGN KEY (crop_id)
+                        REFERENCES crop (id)
+                        ON DELETE SET NULL
+            );
+        </sql>
+
+        <rollback>
+            DROP TABLE IF EXISTS parcel;
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>

@@ -4,5 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <include file="db/changelog/changes/001-create-farm-table.xml"/>
+    <include file="/db/changelog/changes/002-create-crop-table.xml"/>
+    <include file="db/changelog/changes/003-create-parcel-table.xml"/>
 
 </databaseChangeLog>
