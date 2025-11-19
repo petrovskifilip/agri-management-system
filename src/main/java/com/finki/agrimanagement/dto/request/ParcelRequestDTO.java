@@ -10,7 +10,7 @@ import jakarta.validation.constraints.DecimalMin;
 public class ParcelRequestDTO {
 
     @NotBlank(message = "Parcel name is required")
-    @Size(min = 2, max = 100, message = "Parcel name must be between 2 and 100 characters")
+    @Size(max = 255, message = "Parcel name must be up to 255 characters")
     private String name;
 
     private Double latitude;
@@ -20,8 +20,8 @@ public class ParcelRequestDTO {
     @DecimalMin(value = "0.01", message = "Area must be greater than 0")
     private Double area;
 
-    private Long farmId;
     @NotNull(message = "Farm ID is required")
+    private Long farmId;
 
     private Long cropId;
 

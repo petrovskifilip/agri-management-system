@@ -8,7 +8,7 @@ import lombok.Data;
 public class FarmRequestDTO {
 
     @NotBlank(message = "Farm name is required")
-    @Size(min = 2, max = 255, message = "Farm name must be between 2 and 255 characters")
+    @Size(max = 255, message = "Farm name must be up to 255 characters")
     private String name;
 
     private String location;
