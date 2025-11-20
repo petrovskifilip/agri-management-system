@@ -1,5 +1,6 @@
 package com.finki.agrimanagement.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +8,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "parcel")
@@ -36,6 +41,9 @@ public class Parcel {
     @ManyToOne
     @JoinColumn(name = "crop_id")
     private Crop crop;
+
+    @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Irrigation> irrigations = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -91,6 +99,14 @@ public class Parcel {
 
     public void setCrop(Crop crop) {
         this.crop = crop;
+    }
+
+    public List<Irrigation> getIrrigations() {
+        return irrigations;
+    }
+
+    public void setIrrigations(List<Irrigation> irrigations) {
+        this.irrigations = irrigations;
     }
 }
 
