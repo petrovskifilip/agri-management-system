@@ -22,16 +22,16 @@ public class Parcel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column
+    @Column(name = "latitude")
     private Double latitude;
 
-    @Column
+    @Column(name = "longitude")
     private Double longitude;
 
-    @Column
+    @Column(name = "area")
     private Double area;
 
     @ManyToOne

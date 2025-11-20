@@ -36,7 +36,7 @@ public class Irrigation {
     private Double waterAmountLiters;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(name = "status", nullable = false, length = 50)
     private IrrigationStatus status;
 
     @Column(name = "created_at", nullable = false)

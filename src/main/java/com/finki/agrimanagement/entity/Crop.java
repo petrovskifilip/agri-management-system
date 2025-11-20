@@ -20,13 +20,13 @@ public class Crop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column
+    @Column(name = "irrigation_frequency_days")
     private Integer irrigationFrequencyDays;
 
-    @Column
+    @Column(name = "fertilization_frequency_days")
     private Integer fertilizationFrequencyDays;
 
     @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
