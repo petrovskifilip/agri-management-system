@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="8" author="filip.petrovski">
+        <sql>
+            ALTER TABLE crop
+            ADD COLUMN irrigation_duration_minutes INTEGER,
+            ADD COLUMN water_requirement_liters_per_sqm DOUBLE PRECISION;
+        </sql>
+
+        <rollback>
+            ALTER TABLE crop
+            DROP COLUMN IF EXISTS irrigation_duration_minutes,
+            DROP COLUMN IF EXISTS water_requirement_liters_per_sqm;
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>
+

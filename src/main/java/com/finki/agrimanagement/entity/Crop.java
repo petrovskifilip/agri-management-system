@@ -29,6 +29,12 @@ public class Crop {
     @Column(name = "fertilization_frequency_days")
     private Integer fertilizationFrequencyDays;
 
+    @Column(name = "irrigation_duration_minutes")
+    private Integer irrigationDurationMinutes;
+
+    @Column(name = "water_requirement_liters_per_sqm")
+    private Double waterRequirementLitersPerSqm;
+
     @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
     private List<Parcel> parcels = new ArrayList<>();
 
@@ -62,6 +68,22 @@ public class Crop {
 
     public void setFertilizationFrequencyDays(Integer fertilizationFrequencyDays) {
         this.fertilizationFrequencyDays = fertilizationFrequencyDays;
+    }
+
+    public Integer getIrrigationDurationMinutes() {
+        return irrigationDurationMinutes;
+    }
+
+    public void setIrrigationDurationMinutes(Integer irrigationDurationMinutes) {
+        this.irrigationDurationMinutes = irrigationDurationMinutes;
+    }
+
+    public Double getWaterRequirementLitersPerSqm() {
+        return waterRequirementLitersPerSqm;
+    }
+
+    public void setWaterRequirementLitersPerSqm(Double waterRequirementLitersPerSqm) {
+        this.waterRequirementLitersPerSqm = waterRequirementLitersPerSqm;
     }
 
     public List<Parcel> getParcels() {

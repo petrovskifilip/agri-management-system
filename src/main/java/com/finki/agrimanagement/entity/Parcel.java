@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,9 @@ public class Parcel {
 
     @Column(name = "area")
     private Double area;
+
+    @Column(name = "last_irrigated_at")
+    private LocalDateTime lastIrrigatedAt;
 
     @ManyToOne
     @JoinColumn(name = "farm_id", nullable = false)
@@ -83,6 +87,14 @@ public class Parcel {
 
     public void setArea(Double area) {
         this.area = area;
+    }
+
+    public LocalDateTime getLastIrrigatedAt() {
+        return lastIrrigatedAt;
+    }
+
+    public void setLastIrrigatedAt(LocalDateTime lastIrrigatedAt) {
+        this.lastIrrigatedAt = lastIrrigatedAt;
     }
 
     public Farm getFarm() {

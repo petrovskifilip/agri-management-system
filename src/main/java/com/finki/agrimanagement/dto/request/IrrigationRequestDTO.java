@@ -27,5 +27,7 @@ public class IrrigationRequestDTO {
 
     @NotNull(message = "Status is required")
     private IrrigationStatus status;
+
+    private String statusDescription;
 }
 

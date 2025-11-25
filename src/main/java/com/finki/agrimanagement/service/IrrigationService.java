@@ -2,8 +2,10 @@ package com.finki.agrimanagement.service;
 
 import com.finki.agrimanagement.dto.request.IrrigationRequestDTO;
 import com.finki.agrimanagement.dto.response.IrrigationResponseDTO;
+import com.finki.agrimanagement.entity.Irrigation;
 import com.finki.agrimanagement.enums.IrrigationStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IrrigationService {
@@ -25,5 +27,7 @@ public interface IrrigationService {
     List<IrrigationResponseDTO> getUpcomingIrrigations();
 
     IrrigationResponseDTO updateIrrigationStatus(Long id, IrrigationStatus newStatus);
+
+    List<Irrigation> getIrrigationsDueBeforeByStatus(LocalDateTime dateTime, IrrigationStatus status);
 }
 

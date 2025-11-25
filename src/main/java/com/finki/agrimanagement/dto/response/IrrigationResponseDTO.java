@@ -15,6 +15,11 @@ public class IrrigationResponseDTO {
     private Integer durationMinutes;
     private Double waterAmountLiters;
     private IrrigationStatus status;
+    private LocalDateTime startDatetime;
+    private LocalDateTime finishedDatetime;
+    private Integer retryCount;
+    private LocalDateTime lastRetryAt;
+    private String statusDescription;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

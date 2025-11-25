@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="5" author="filip.petrovski">
+        <sql>
+            ALTER TABLE parcel
+            ADD COLUMN last_irrigated_at TIMESTAMP;
+        </sql>
+
+        <rollback>
+            ALTER TABLE parcel
+            DROP COLUMN IF EXISTS last_irrigated_at;
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>

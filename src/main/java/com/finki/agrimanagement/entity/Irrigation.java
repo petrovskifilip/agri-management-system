@@ -39,6 +39,21 @@ public class Irrigation {
     @Column(name = "status", nullable = false, length = 50)
     private IrrigationStatus status;
 
+    @Column(name = "start_datetime")
+    private LocalDateTime startDatetime;
+
+    @Column(name = "finished_datetime")
+    private LocalDateTime finishedDatetime;
+
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount = 0;
+
+    @Column(name = "last_retry_at")
+    private LocalDateTime lastRetryAt;
+
+    @Column(name = "status_description")
+    private String statusDescription;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -91,6 +106,46 @@ public class Irrigation {
 
     public void setStatus(IrrigationStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getStartDatetime() {
+        return startDatetime;
+    }
+
+    public void setStartDatetime(LocalDateTime startDatetime) {
+        this.startDatetime = startDatetime;
+    }
+
+    public LocalDateTime getFinishedDatetime() {
+        return finishedDatetime;
+    }
+
+    public void setFinishedDatetime(LocalDateTime finishedDatetime) {
+        this.finishedDatetime = finishedDatetime;
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public LocalDateTime getLastRetryAt() {
+        return lastRetryAt;
+    }
+
+    public void setLastRetryAt(LocalDateTime lastRetryAt) {
+        this.lastRetryAt = lastRetryAt;
+    }
+
+    public String getStatusDescription() {
+        return statusDescription;
+    }
+
+    public void setStatusDescription(String statusDescription) {
+        this.statusDescription = statusDescription;
     }
 
     public LocalDateTime getCreatedAt() {

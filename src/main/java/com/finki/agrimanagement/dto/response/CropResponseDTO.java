@@ -9,6 +9,8 @@ public class CropResponseDTO {
     private String name;
     private Integer irrigationFrequencyDays;
     private Integer fertilizationFrequencyDays;
+    private Integer irrigationDurationMinutes;
+    private Double waterRequirementLitersPerSqm;
     private int parcelCount;
 
 }

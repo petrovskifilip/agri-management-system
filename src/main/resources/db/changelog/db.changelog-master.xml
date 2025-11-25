@@ -8,5 +8,9 @@
     <include file="db/changelog/changes/002-create-crop-table.xml"/>
     <include file="db/changelog/changes/003-create-parcel-table.xml"/>
     <include file="db/changelog/changes/004-create-irrigation-table.xml"/>
+    <include file="db/changelog/changes/005-add-last-irrigated-at-to-parcel.xml"/>
+    <include file="db/changelog/changes/006-add-start-finished-datetime-to-irrigation.xml"/>
+    <include file="db/changelog/changes/007-add-retry-fields-to-irrigation.xml"/>
+    <include file="db/changelog/changes/008-add-irrigation-fields-to-crop.xml"/>
 
 </databaseChangeLog>

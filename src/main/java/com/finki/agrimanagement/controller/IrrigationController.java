@@ -3,6 +3,7 @@ package com.finki.agrimanagement.controller;
 import com.finki.agrimanagement.dto.request.IrrigationRequestDTO;
 import com.finki.agrimanagement.dto.response.IrrigationResponseDTO;
 import com.finki.agrimanagement.enums.IrrigationStatus;
+import com.finki.agrimanagement.service.IrrigationExecutionService;
 import com.finki.agrimanagement.service.IrrigationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,12 @@ import java.util.List;
 public class IrrigationController {
 
     private final IrrigationService irrigationService;
+    private final IrrigationExecutionService irrigationExecutionService;
 
-    public IrrigationController(IrrigationService irrigationService) {
+    public IrrigationController(IrrigationService irrigationService,
+                                IrrigationExecutionService irrigationExecutionService) {
         this.irrigationService = irrigationService;
+        this.irrigationExecutionService = irrigationExecutionService;
     }
 
     @PostMapping
@@ -76,6 +80,18 @@ public class IrrigationController {
     public ResponseEntity<Void> deleteIrrigation(@PathVariable Long id) {
         irrigationService.deleteIrrigation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/execute")
+    public ResponseEntity<String> executeIrrigation(@PathVariable Long id) {
+        irrigationExecutionService.executeIrrigation(id);
+        return ResponseEntity.ok("Irrigation executed successfully");
+    }
+
+    @PostMapping("/{id}/stop")
+    public ResponseEntity<String> stopIrrigation(@PathVariable Long id) {
+        irrigationExecutionService.stopIrrigation(id);
+        return ResponseEntity.ok("Irrigation stopped successfully");
     }
 }
 

@@ -14,4 +14,8 @@ public class CropRequestDTO {
     private Integer fertilizationFrequencyDays;
 
     private Integer irrigationFrequencyDays;
+
+    private Integer irrigationDurationMinutes;
+
+    private Double waterRequirementLitersPerSqm;
 }

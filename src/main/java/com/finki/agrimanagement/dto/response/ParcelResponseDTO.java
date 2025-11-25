@@ -2,6 +2,8 @@ package com.finki.agrimanagement.dto.response;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ParcelResponseDTO {
 
@@ -14,5 +16,6 @@ public class ParcelResponseDTO {
     private String farmName;
     private Long cropId;
     private String cropName;
+    private LocalDateTime lastIrrigatedAt;
 
 }

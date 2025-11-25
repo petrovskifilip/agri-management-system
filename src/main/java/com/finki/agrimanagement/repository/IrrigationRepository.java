@@ -16,4 +16,8 @@ public interface IrrigationRepository extends JpaRepository<Irrigation, Long> {
     List<Irrigation> findByStatus(IrrigationStatus status);
 
     List<Irrigation> findByStatusAndScheduledDatetimeAfter(IrrigationStatus status, LocalDateTime dateTime);
+
+    List<Irrigation> findByStatusAndScheduledDatetimeBefore(IrrigationStatus status, LocalDateTime dateTime);
+
+    List<Irrigation> findByParcelIdAndStatus(Long parcelId, IrrigationStatus status);
 }

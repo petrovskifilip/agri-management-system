@@ -5,5 +5,7 @@ public enum IrrigationStatus {
     IN_PROGRESS,
     COMPLETED,
     CANCELLED,
-    FAILED
+    FAILED,
+    RETRYING,
+    STOPPED
 }

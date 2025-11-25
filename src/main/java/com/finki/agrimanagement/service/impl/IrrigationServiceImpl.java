@@ -45,6 +45,10 @@ public class IrrigationServiceImpl implements IrrigationService {
         irrigation.setCreatedAt(LocalDateTime.now());
         irrigation.setUpdatedAt(LocalDateTime.now());
 
+        if (irrigation.getStatusDescription() == null || irrigation.getStatusDescription().isEmpty()) {
+            irrigation.setStatusDescription(getDefaultStatusDescription(irrigation.getStatus()));
+        }
+
         Irrigation saved = irrigationRepository.save(irrigation);
         return irrigationMapper.toDTO(saved);
     }
@@ -76,6 +80,10 @@ public class IrrigationServiceImpl implements IrrigationService {
         irrigation.setParcel(parcel);
 
         irrigation.setUpdatedAt(LocalDateTime.now());
+
+        if (irrigation.getStatusDescription() == null || irrigation.getStatusDescription().isEmpty()) {
+            irrigation.setStatusDescription(getDefaultStatusDescription(irrigation.getStatus()));
+        }
 
         Irrigation updated = irrigationRepository.save(irrigation);
         return irrigationMapper.toDTO(updated);
@@ -121,8 +129,29 @@ public class IrrigationServiceImpl implements IrrigationService {
 
         irrigation.setStatus(newStatus);
         irrigation.setUpdatedAt(LocalDateTime.now());
+        irrigation.setStatusDescription(getDefaultStatusDescription(newStatus));
 
         Irrigation updated = irrigationRepository.save(irrigation);
         return irrigationMapper.toDTO(updated);
+    }
+
+    @Override
+    public List<Irrigation> getIrrigationsDueBeforeByStatus(LocalDateTime dateTime, IrrigationStatus status) {
+        return irrigationRepository.findByStatusAndScheduledDatetimeBefore(status, dateTime);
+    }
+
+    /**
+     * Get default status description based on irrigation status
+     */
+    private String getDefaultStatusDescription(IrrigationStatus status) {
+        return switch (status) {
+            case SCHEDULED -> "Irrigation scheduled and waiting to be executed";
+            case IN_PROGRESS -> "Irrigation is currently in progress";
+            case COMPLETED -> "Irrigation completed successfully";
+            case CANCELLED -> "Irrigation was cancelled";
+            case FAILED -> "Irrigation execution failed";
+            case RETRYING -> "Irrigation retry after a failure";
+            case STOPPED -> "Irrigation was stopped manually";
+        };
     }
 }

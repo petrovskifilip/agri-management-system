@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="6" author="filip.petrovski">
+        <sql>
+            ALTER TABLE irrigation
+            ADD COLUMN start_datetime TIMESTAMP,
+            ADD COLUMN finished_datetime TIMESTAMP;
+        </sql>
+
+        <rollback>
+            ALTER TABLE irrigation
+            DROP COLUMN IF EXISTS start_datetime,
+            DROP COLUMN IF EXISTS finished_datetime;
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>
+
