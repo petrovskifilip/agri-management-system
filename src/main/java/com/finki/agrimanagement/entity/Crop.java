@@ -29,6 +29,9 @@ public class Crop {
     @Column(name = "fertilization_frequency_days")
     private Integer fertilizationFrequencyDays;
 
+    @Column(name = "fertilizer_type")
+    private String fertilizerType;
+
     @Column(name = "irrigation_duration_minutes")
     private Integer irrigationDurationMinutes;
 
@@ -68,6 +71,14 @@ public class Crop {
 
     public void setFertilizationFrequencyDays(Integer fertilizationFrequencyDays) {
         this.fertilizationFrequencyDays = fertilizationFrequencyDays;
+    }
+
+    public String getFertilizerType() {
+        return fertilizerType;
+    }
+
+    public void setFertilizerType(String fertilizerType) {
+        this.fertilizerType = fertilizerType;
     }
 
     public Integer getIrrigationDurationMinutes() {

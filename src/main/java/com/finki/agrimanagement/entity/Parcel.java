@@ -38,6 +38,9 @@ public class Parcel {
     @Column(name = "last_irrigated_at")
     private LocalDateTime lastIrrigatedAt;
 
+    @Column(name = "last_fertilized_at")
+    private LocalDateTime lastFertilizedAt;
+
     @ManyToOne
     @JoinColumn(name = "farm_id", nullable = false)
     private Farm farm;
@@ -48,6 +51,9 @@ public class Parcel {
 
     @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Irrigation> irrigations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Fertilization> fertilizations = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -97,6 +103,14 @@ public class Parcel {
         this.lastIrrigatedAt = lastIrrigatedAt;
     }
 
+    public LocalDateTime getLastFertilizedAt() {
+        return lastFertilizedAt;
+    }
+
+    public void setLastFertilizedAt(LocalDateTime lastFertilizedAt) {
+        this.lastFertilizedAt = lastFertilizedAt;
+    }
+
     public Farm getFarm() {
         return farm;
     }
@@ -119,6 +133,14 @@ public class Parcel {
 
     public void setIrrigations(List<Irrigation> irrigations) {
         this.irrigations = irrigations;
+    }
+
+    public List<Fertilization> getFertilizations() {
+        return fertilizations;
+    }
+
+    public void setFertilizations(List<Fertilization> fertilizations) {
+        this.fertilizations = fertilizations;
     }
 }
 

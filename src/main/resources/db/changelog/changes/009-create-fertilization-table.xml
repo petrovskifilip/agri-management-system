@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="9" author="filip.petrovski">
+        <sql>
+            CREATE TABLE fertilization
+            (
+                id                  BIGSERIAL PRIMARY KEY,
+                parcel_id           BIGINT      NOT NULL,
+                scheduled_datetime  TIMESTAMP   NOT NULL,
+                fertilizer_type     VARCHAR(255),
+                status              VARCHAR(50) NOT NULL,
+                completed_datetime  TIMESTAMP,
+                notes               TEXT,
+                created_at          TIMESTAMP DEFAULT NOW(),
+                updated_at          TIMESTAMP DEFAULT NOW(),
+
+                CONSTRAINT fk_fertilization_parcel FOREIGN KEY (parcel_id)
+                    REFERENCES parcel (id) ON DELETE CASCADE
+            );
+        </sql>
+
+        <rollback>
+            DROP TABLE IF EXISTS fertilization;
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>

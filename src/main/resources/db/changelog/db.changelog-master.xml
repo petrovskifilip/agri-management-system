@@ -12,5 +12,8 @@
     <include file="db/changelog/changes/006-add-start-finished-datetime-to-irrigation.xml"/>
     <include file="db/changelog/changes/007-add-retry-fields-to-irrigation.xml"/>
     <include file="db/changelog/changes/008-add-irrigation-fields-to-crop.xml"/>
+    <include file="db/changelog/changes/009-create-fertilization-table.xml"/>
+    <include file="db/changelog/changes/010-add-last-fertilized-at-to-parcel.xml"/>
+    <include file="db/changelog/changes/011-add-fertilizer-type-to-crop.xml"/>
 
 </databaseChangeLog>
