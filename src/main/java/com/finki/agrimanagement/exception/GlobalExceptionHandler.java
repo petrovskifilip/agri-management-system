@@ -19,6 +19,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(MissingCoordinatesException.class)
+    public ResponseEntity<Map<String, String>> handleMissingCoordinates(MissingCoordinatesException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Parcel coordinates not set");
+        error.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();

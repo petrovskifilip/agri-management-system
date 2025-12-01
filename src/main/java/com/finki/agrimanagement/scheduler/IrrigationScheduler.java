@@ -9,6 +9,7 @@ import com.finki.agrimanagement.repository.IrrigationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
 import com.finki.agrimanagement.service.IrrigationExecutionService;
 import com.finki.agrimanagement.service.IrrigationService;
+import com.finki.agrimanagement.service.WeatherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,17 +27,20 @@ public class IrrigationScheduler {
     private final IrrigationRetryConfig retryConfig;
     private final ParcelRepository parcelRepository;
     private final IrrigationRepository irrigationRepository;
+    private final WeatherService weatherService;
 
     public IrrigationScheduler(IrrigationService irrigationService,
                                IrrigationExecutionService irrigationExecutionService,
                                IrrigationRetryConfig retryConfig,
                                ParcelRepository parcelRepository,
-                               IrrigationRepository irrigationRepository) {
+                               IrrigationRepository irrigationRepository,
+                               WeatherService weatherService) {
         this.irrigationService = irrigationService;
         this.irrigationExecutionService = irrigationExecutionService;
         this.retryConfig = retryConfig;
         this.parcelRepository = parcelRepository;
         this.irrigationRepository = irrigationRepository;
+        this.weatherService = weatherService;
     }
 
     /**
@@ -68,13 +72,20 @@ public class IrrigationScheduler {
 
         for (Irrigation irrigation : irrigationsToExecute) {
             try {
+                Parcel parcel = irrigation.getParcel();
+
                 String statusInfo = irrigation.getStatus() == IrrigationStatus.RETRYING
                         ? " (retry attempt " + (irrigation.getRetryCount() + 1) + ")"
                         : "";
                 log.info("Executing irrigation ID: {} for parcel: {}{}",
                         irrigation.getId(),
-                        irrigation.getParcel().getName(),
+                        parcel.getName(),
                         statusInfo);
+
+                // Weather check - postpone if rain detected
+                if (checkWeatherAndPostponeIfNeeded(irrigation, parcel)) {
+                    continue;
+                }
 
                 irrigationExecutionService.executeIrrigation(irrigation.getId());
 
@@ -280,6 +291,39 @@ public class IrrigationScheduler {
 
         log.info("Created irrigation schedule for parcel {} at {} (duration: {} min, water: {} L)",
                 parcel.getName(), scheduledTime, duration, waterAmount);
+    }
+
+    /**
+     * Check weather conditions and postpone irrigation if rain is detected
+     *
+     * @param irrigation The irrigation to check
+     * @param parcel     The parcel associated with the irrigation
+     * @return true if irrigation should be postponed, false otherwise
+     */
+    private boolean checkWeatherAndPostponeIfNeeded(Irrigation irrigation, Parcel parcel) {
+        if (parcel.getLatitude() == null || parcel.getLongitude() == null) {
+            log.debug("Parcel {} has no coordinates set, skipping weather check", parcel.getName());
+            return false;
+        }
+
+        var rainCheck = weatherService.checkRainConditions(
+                parcel.getLatitude(),
+                parcel.getLongitude()
+        );
+
+        if (rainCheck.isRaining() || rainCheck.isRainExpectedInOneHour()) {
+            String reason = rainCheck.isRaining() ? "currently raining" : "rain expected in next hour";
+            log.info("Postponing irrigation ID: {} by 2 hours - {} for parcel: {}",
+                    irrigation.getId(), reason, parcel.getName());
+
+            irrigation.setScheduledDatetime(irrigation.getScheduledDatetime().plusHours(2));
+            irrigation.setStatusDescription("Postponed by 2 hours - " + reason);
+            irrigation.setUpdatedAt(LocalDateTime.now());
+            irrigationRepository.save(irrigation);
+            return true;
+        }
+
+        return false;
     }
 }
 

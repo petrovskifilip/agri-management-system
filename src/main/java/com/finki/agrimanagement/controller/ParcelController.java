@@ -2,6 +2,7 @@ package com.finki.agrimanagement.controller;
 
 import com.finki.agrimanagement.dto.request.ParcelRequestDTO;
 import com.finki.agrimanagement.dto.response.ParcelResponseDTO;
+import com.finki.agrimanagement.dto.weather.ParcelWeatherDTO;
 import com.finki.agrimanagement.service.ParcelService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,12 @@ public class ParcelController {
     public ResponseEntity<Void> deleteParcel(@PathVariable Long id) {
         parcelService.deleteParcel(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/weather")
+    public ResponseEntity<ParcelWeatherDTO> getParcelWeather(@PathVariable Long id) {
+        ParcelWeatherDTO weather = parcelService.getParcelWeather(id);
+        return ResponseEntity.ok(weather);
     }
 }
 
