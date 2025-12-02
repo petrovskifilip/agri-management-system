@@ -7,6 +7,7 @@ import com.finki.agrimanagement.entity.Parcel;
 import com.finki.agrimanagement.enums.IrrigationStatus;
 import com.finki.agrimanagement.repository.IrrigationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
+import com.finki.agrimanagement.service.EmailNotificationService;
 import com.finki.agrimanagement.service.IrrigationExecutionService;
 import com.finki.agrimanagement.service.IrrigationService;
 import com.finki.agrimanagement.service.WeatherService;
@@ -28,19 +29,22 @@ public class IrrigationScheduler {
     private final ParcelRepository parcelRepository;
     private final IrrigationRepository irrigationRepository;
     private final WeatherService weatherService;
+    private final EmailNotificationService emailNotificationService;
 
     public IrrigationScheduler(IrrigationService irrigationService,
                                IrrigationExecutionService irrigationExecutionService,
                                IrrigationRetryConfig retryConfig,
                                ParcelRepository parcelRepository,
                                IrrigationRepository irrigationRepository,
-                               WeatherService weatherService) {
+                               WeatherService weatherService,
+                               EmailNotificationService emailNotificationService) {
         this.irrigationService = irrigationService;
         this.irrigationExecutionService = irrigationExecutionService;
         this.retryConfig = retryConfig;
         this.parcelRepository = parcelRepository;
         this.irrigationRepository = irrigationRepository;
         this.weatherService = weatherService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     /**
@@ -320,6 +324,14 @@ public class IrrigationScheduler {
             irrigation.setStatusDescription("Postponed by 2 hours - " + reason);
             irrigation.setUpdatedAt(LocalDateTime.now());
             irrigationRepository.save(irrigation);
+
+            // Send postponement notification email
+            try {
+                emailNotificationService.sendIrrigationPostponedNotification(irrigation, reason);
+            } catch (Exception emailEx) {
+                log.error("Failed to send irrigation postponed notification email", emailEx);
+            }
+
             return true;
         }
 

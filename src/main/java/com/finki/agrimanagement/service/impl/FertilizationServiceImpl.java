@@ -9,6 +9,7 @@ import com.finki.agrimanagement.exception.ResourceNotFoundException;
 import com.finki.agrimanagement.mapper.FertilizationMapper;
 import com.finki.agrimanagement.repository.FertilizationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
+import com.finki.agrimanagement.service.EmailNotificationService;
 import com.finki.agrimanagement.service.FertilizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,16 @@ public class FertilizationServiceImpl implements FertilizationService {
     private final FertilizationRepository fertilizationRepository;
     private final ParcelRepository parcelRepository;
     private final FertilizationMapper fertilizationMapper;
+    private final EmailNotificationService emailNotificationService;
 
     public FertilizationServiceImpl(FertilizationRepository fertilizationRepository,
                                     ParcelRepository parcelRepository,
-                                    FertilizationMapper fertilizationMapper) {
+                                    FertilizationMapper fertilizationMapper,
+                                    EmailNotificationService emailNotificationService) {
         this.fertilizationRepository = fertilizationRepository;
         this.parcelRepository = parcelRepository;
         this.fertilizationMapper = fertilizationMapper;
+        this.emailNotificationService = emailNotificationService;
     }
 
     /**
@@ -123,6 +127,13 @@ public class FertilizationServiceImpl implements FertilizationService {
         log.info("Marked fertilization ID: {} as COMPLETED for parcel: {}",
                 fertilizationId, parcel.getName());
 
+        // Send completion notification email
+        try {
+            emailNotificationService.sendFertilizationCompletedNotification(updated);
+        } catch (Exception emailEx) {
+            log.error("Failed to send fertilization completed notification email", emailEx);
+        }
+
         // Automatically schedule the next fertilization
         scheduleNextFertilization(parcel, completedAt);
 
@@ -179,6 +190,13 @@ public class FertilizationServiceImpl implements FertilizationService {
 
         Fertilization updated = fertilizationRepository.save(fertilization);
         log.info("Cancelled fertilization ID: {}", fertilizationId);
+
+        // Send cancellation notification email
+        try {
+            emailNotificationService.sendFertilizationCancelledNotification(updated);
+        } catch (Exception emailEx) {
+            log.error("Failed to send fertilization cancelled notification email", emailEx);
+        }
 
         return fertilizationMapper.toDTO(updated);
     }

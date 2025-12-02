@@ -5,6 +5,7 @@ import com.finki.agrimanagement.entity.Parcel;
 import com.finki.agrimanagement.enums.FertilizationStatus;
 import com.finki.agrimanagement.repository.FertilizationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
+import com.finki.agrimanagement.service.EmailNotificationService;
 import com.finki.agrimanagement.service.FertilizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,13 +21,16 @@ public class FertilizationScheduler {
     private final FertilizationService fertilizationService;
     private final ParcelRepository parcelRepository;
     private final FertilizationRepository fertilizationRepository;
+    private final EmailNotificationService emailNotificationService;
 
     public FertilizationScheduler(FertilizationService fertilizationService,
                                   ParcelRepository parcelRepository,
-                                  FertilizationRepository fertilizationRepository) {
+                                  FertilizationRepository fertilizationRepository,
+                                  EmailNotificationService emailNotificationService) {
         this.fertilizationService = fertilizationService;
         this.parcelRepository = parcelRepository;
         this.fertilizationRepository = fertilizationRepository;
+        this.emailNotificationService = emailNotificationService;
     }
 
     /**
@@ -58,9 +62,15 @@ public class FertilizationScheduler {
 
                 fertilizationService.markAsPending(fertilization.getId());
 
-                // TODO: Send notification to user (will be implemented later)
-                log.info("Fertilization ID: {} is now PENDING - notification should be sent to user",
+                // Send notification to user
+                log.info("Fertilization ID: {} is now PENDING - sending notification to user",
                         fertilization.getId());
+
+                try {
+                    emailNotificationService.sendFertilizationDueNotification(fertilization);
+                } catch (Exception emailEx) {
+                    log.error("Failed to send fertilization due notification email", emailEx);
+                }
 
             } catch (Exception e) {
                 log.error("Failed to process fertilization ID: {}. Error: {}",

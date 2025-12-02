@@ -7,6 +7,7 @@ import com.finki.agrimanagement.enums.IrrigationStatus;
 import com.finki.agrimanagement.exception.ResourceNotFoundException;
 import com.finki.agrimanagement.repository.IrrigationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
+import com.finki.agrimanagement.service.EmailNotificationService;
 import com.finki.agrimanagement.service.IrrigationExecutionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,16 @@ public class IrrigationExecutionServiceImpl implements IrrigationExecutionServic
     private final IrrigationRepository irrigationRepository;
     private final ParcelRepository parcelRepository;
     private final IrrigationRetryConfig retryConfig;
+    private final EmailNotificationService emailNotificationService;
 
     public IrrigationExecutionServiceImpl(IrrigationRepository irrigationRepository,
                                          ParcelRepository parcelRepository,
-                                         IrrigationRetryConfig retryConfig) {
+                                         IrrigationRetryConfig retryConfig,
+                                         EmailNotificationService emailNotificationService) {
         this.irrigationRepository = irrigationRepository;
         this.parcelRepository = parcelRepository;
         this.retryConfig = retryConfig;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Override
@@ -68,6 +72,13 @@ public class IrrigationExecutionServiceImpl implements IrrigationExecutionServic
 
             log.info("Successfully completed irrigation ID: {}", irrigationId);
 
+            // Send email notification
+            try {
+                emailNotificationService.sendIrrigationCompletedNotification(irrigation);
+            } catch (Exception emailEx) {
+                log.error("Failed to send irrigation completed notification email", emailEx);
+            }
+
         } catch (Exception e) {
             log.error("Failed to execute irrigation ID: {}. Error: {}", irrigationId, e.getMessage(), e);
             handleExecutionFailure(irrigation, e);
@@ -100,6 +111,16 @@ public class IrrigationExecutionServiceImpl implements IrrigationExecutionServic
             irrigation.setFinishedDatetime(now);
             log.error("Irrigation ID: {} marked as FAILED after {} attempts",
                     irrigation.getId(), irrigation.getRetryCount());
+
+            // Send failure notification email
+            try {
+                emailNotificationService.sendIrrigationFailedNotification(
+                    irrigation,
+                    "Maximum retry attempts exceeded. Last error: " + exception.getMessage()
+                );
+            } catch (Exception emailEx) {
+                log.error("Failed to send irrigation failed notification email", emailEx);
+            }
         } else {
             // Set back to SCHEDULED for retry with fixed delay
             irrigation.setStatus(IrrigationStatus.SCHEDULED);
