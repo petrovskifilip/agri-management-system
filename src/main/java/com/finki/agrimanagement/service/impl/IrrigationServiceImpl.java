@@ -2,11 +2,14 @@ package com.finki.agrimanagement.service.impl;
 
 import com.finki.agrimanagement.dto.request.IrrigationRequestDTO;
 import com.finki.agrimanagement.dto.response.IrrigationResponseDTO;
+import com.finki.agrimanagement.entity.Farm;
 import com.finki.agrimanagement.entity.Irrigation;
 import com.finki.agrimanagement.entity.Parcel;
+import com.finki.agrimanagement.entity.User;
 import com.finki.agrimanagement.enums.IrrigationStatus;
 import com.finki.agrimanagement.exception.ResourceNotFoundException;
 import com.finki.agrimanagement.mapper.IrrigationMapper;
+import com.finki.agrimanagement.repository.FarmRepository;
 import com.finki.agrimanagement.repository.IrrigationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
 import com.finki.agrimanagement.service.IrrigationService;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +27,16 @@ public class IrrigationServiceImpl implements IrrigationService {
 
     private final IrrigationRepository irrigationRepository;
     private final ParcelRepository parcelRepository;
+    private final FarmRepository farmRepository;
     private final IrrigationMapper irrigationMapper;
 
     public IrrigationServiceImpl(IrrigationRepository irrigationRepository,
                                  ParcelRepository parcelRepository,
+                                 FarmRepository farmRepository,
                                  IrrigationMapper irrigationMapper) {
         this.irrigationRepository = irrigationRepository;
         this.parcelRepository = parcelRepository;
+        this.farmRepository = farmRepository;
         this.irrigationMapper = irrigationMapper;
     }
 
@@ -116,6 +123,36 @@ public class IrrigationServiceImpl implements IrrigationService {
     public List<IrrigationResponseDTO> getUpcomingIrrigations() {
         return irrigationRepository.findByStatusAndScheduledDatetimeAfter(
                         IrrigationStatus.SCHEDULED, LocalDateTime.now())
+                .stream()
+                .map(irrigationMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IrrigationResponseDTO> getUpcomingIrrigationsForUser(User user) {
+        // Get all farm IDs for the user
+        List<Long> farmIds = farmRepository.findByUserId(user.getId()).stream()
+                .map(Farm::getId)
+                .collect(Collectors.toList());
+
+        if (farmIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Get all parcel IDs from user's farms
+        List<Long> parcelIds = parcelRepository.findByFarmIdIn(farmIds).stream()
+                .map(Parcel::getId)
+                .collect(Collectors.toList());
+
+        if (parcelIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Get upcoming irrigations for user's parcels
+        return irrigationRepository.findByStatusAndScheduledDatetimeAfterAndParcelIdIn(
+                        IrrigationStatus.SCHEDULED,
+                        LocalDateTime.now(),
+                        parcelIds)
                 .stream()
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());

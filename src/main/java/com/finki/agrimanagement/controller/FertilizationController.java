@@ -2,11 +2,13 @@ package com.finki.agrimanagement.controller;
 
 import com.finki.agrimanagement.dto.request.FertilizationRequestDTO;
 import com.finki.agrimanagement.dto.response.FertilizationResponseDTO;
+import com.finki.agrimanagement.entity.User;
 import com.finki.agrimanagement.enums.FertilizationStatus;
 import com.finki.agrimanagement.service.FertilizationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -65,6 +67,13 @@ public class FertilizationController {
     @GetMapping("/status/{status}")
     public ResponseEntity<List<FertilizationResponseDTO>> getFertilizationsByStatus(@PathVariable FertilizationStatus status) {
         return ResponseEntity.ok(fertilizationService.getFertilizationsByStatus(status));
+    }
+
+    @GetMapping("/user/status/{status}")
+    public ResponseEntity<List<FertilizationResponseDTO>> getFertilizationsByStatusForUser(
+            @PathVariable FertilizationStatus status,
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(fertilizationService.getFertilizationsByStatusForUser(status, user));
     }
 
     @PutMapping("/{id}")

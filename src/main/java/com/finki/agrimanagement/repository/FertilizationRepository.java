@@ -18,5 +18,7 @@ public interface FertilizationRepository extends JpaRepository<Fertilization, Lo
     List<Fertilization> findByStatusAndScheduledDatetimeBefore(FertilizationStatus status, LocalDateTime dateTime);
 
     List<Fertilization> findByParcelIdAndStatus(Long parcelId, FertilizationStatus status);
+
+    List<Fertilization> findByStatusAndParcelIdIn(FertilizationStatus status, List<Long> parcelIds);
 }
 

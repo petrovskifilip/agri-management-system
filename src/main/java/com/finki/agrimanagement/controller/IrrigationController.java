@@ -2,12 +2,14 @@ package com.finki.agrimanagement.controller;
 
 import com.finki.agrimanagement.dto.request.IrrigationRequestDTO;
 import com.finki.agrimanagement.dto.response.IrrigationResponseDTO;
+import com.finki.agrimanagement.entity.User;
 import com.finki.agrimanagement.enums.IrrigationStatus;
 import com.finki.agrimanagement.service.IrrigationExecutionService;
 import com.finki.agrimanagement.service.IrrigationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -62,6 +64,12 @@ public class IrrigationController {
     @GetMapping("/upcoming")
     public ResponseEntity<List<IrrigationResponseDTO>> getUpcomingIrrigations() {
         return ResponseEntity.ok(irrigationService.getUpcomingIrrigations());
+    }
+
+    @GetMapping("/user/upcoming")
+    public ResponseEntity<List<IrrigationResponseDTO>> getUpcomingIrrigationsForUser(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(irrigationService.getUpcomingIrrigationsForUser(user));
     }
 
     @PutMapping("/{id}")

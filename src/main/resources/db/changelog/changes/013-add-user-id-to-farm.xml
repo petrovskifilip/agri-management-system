@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="13" author="system">
+        <sql>
+            ALTER TABLE farm
+            ADD COLUMN user_id BIGINT;
+
+            ALTER TABLE farm
+            ADD CONSTRAINT fk_farm_user
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+        </sql>
+
+        <rollback>
+            ALTER TABLE farm DROP CONSTRAINT IF EXISTS fk_farm_user;
+            ALTER TABLE farm DROP COLUMN IF EXISTS user_id;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+

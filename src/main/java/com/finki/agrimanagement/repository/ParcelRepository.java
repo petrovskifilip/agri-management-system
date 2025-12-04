@@ -12,5 +12,7 @@ public interface ParcelRepository extends JpaRepository<Parcel, Long> {
     List<Parcel> findByFarmId(Long farmId);
 
     List<Parcel> findByCropId(Long cropId);
+
+    List<Parcel> findByFarmIdIn(List<Long> farmIds);
 }
 

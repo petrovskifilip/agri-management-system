@@ -3,6 +3,7 @@ package com.finki.agrimanagement.service.impl;
 import com.finki.agrimanagement.dto.request.FarmRequestDTO;
 import com.finki.agrimanagement.dto.response.FarmResponseDTO;
 import com.finki.agrimanagement.entity.Farm;
+import com.finki.agrimanagement.entity.User;
 import com.finki.agrimanagement.exception.ResourceNotFoundException;
 import com.finki.agrimanagement.mapper.FarmMapper;
 import com.finki.agrimanagement.repository.FarmRepository;
@@ -26,31 +27,42 @@ public class FarmServiceImpl implements FarmService {
 
     @Override
     @Transactional
-    public FarmResponseDTO createFarm(FarmRequestDTO dto) {
+    public FarmResponseDTO createFarm(FarmRequestDTO dto, User user) {
         Farm farm = farmMapper.toEntity(dto);
+        farm.setUser(user);
         Farm saved = farmRepository.save(farm);
         return farmMapper.toDTO(saved);
     }
 
     @Override
-    public List<FarmResponseDTO> getAllFarms() {
-        return farmRepository.findAll().stream()
+    public List<FarmResponseDTO> getAllFarms(User user) {
+        return farmRepository.findByUserId(user.getId()).stream()
                 .map(farmMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public FarmResponseDTO getFarmById(Long id) {
+    public FarmResponseDTO getFarmById(Long id, User user) {
         Farm farm = farmRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Farm not found with id: " + id));
+
+        if (!farm.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Farm not found with id: " + id);
+        }
+
         return farmMapper.toDTO(farm);
     }
 
     @Override
     @Transactional
-    public FarmResponseDTO updateFarm(Long id, FarmRequestDTO dto) {
+    public FarmResponseDTO updateFarm(Long id, FarmRequestDTO dto, User user) {
         Farm farm = farmRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Farm not found with id: " + id));
+
+        if (!farm.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Farm not found with id: " + id);
+        }
+
         farmMapper.updateEntity(dto, farm);
         Farm updated = farmRepository.save(farm);
         return farmMapper.toDTO(updated);
@@ -58,9 +70,14 @@ public class FarmServiceImpl implements FarmService {
 
     @Override
     @Transactional
-    public void deleteFarm(Long id) {
+    public void deleteFarm(Long id, User user) {
         Farm farm = farmRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Farm not found with id: " + id));
+
+        if (!farm.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Farm not found with id: " + id);
+        }
+
         farmRepository.delete(farm);
     }
 }

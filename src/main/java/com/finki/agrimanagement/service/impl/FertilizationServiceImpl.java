@@ -2,11 +2,14 @@ package com.finki.agrimanagement.service.impl;
 
 import com.finki.agrimanagement.dto.request.FertilizationRequestDTO;
 import com.finki.agrimanagement.dto.response.FertilizationResponseDTO;
+import com.finki.agrimanagement.entity.Farm;
 import com.finki.agrimanagement.entity.Fertilization;
 import com.finki.agrimanagement.entity.Parcel;
+import com.finki.agrimanagement.entity.User;
 import com.finki.agrimanagement.enums.FertilizationStatus;
 import com.finki.agrimanagement.exception.ResourceNotFoundException;
 import com.finki.agrimanagement.mapper.FertilizationMapper;
+import com.finki.agrimanagement.repository.FarmRepository;
 import com.finki.agrimanagement.repository.FertilizationRepository;
 import com.finki.agrimanagement.repository.ParcelRepository;
 import com.finki.agrimanagement.service.EmailNotificationService;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,15 +30,18 @@ public class FertilizationServiceImpl implements FertilizationService {
 
     private final FertilizationRepository fertilizationRepository;
     private final ParcelRepository parcelRepository;
+    private final FarmRepository farmRepository;
     private final FertilizationMapper fertilizationMapper;
     private final EmailNotificationService emailNotificationService;
 
     public FertilizationServiceImpl(FertilizationRepository fertilizationRepository,
                                     ParcelRepository parcelRepository,
+                                    FarmRepository farmRepository,
                                     FertilizationMapper fertilizationMapper,
                                     EmailNotificationService emailNotificationService) {
         this.fertilizationRepository = fertilizationRepository;
         this.parcelRepository = parcelRepository;
+        this.farmRepository = farmRepository;
         this.fertilizationMapper = fertilizationMapper;
         this.emailNotificationService = emailNotificationService;
     }
@@ -217,6 +224,35 @@ public class FertilizationServiceImpl implements FertilizationService {
     @Override
     public List<FertilizationResponseDTO> getFertilizationsByStatus(FertilizationStatus status) {
         return fertilizationRepository.findByStatus(status).stream()
+                .map(fertilizationMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get fertilizations by status for a specific user
+     */
+    @Override
+    public List<FertilizationResponseDTO> getFertilizationsByStatusForUser(FertilizationStatus status, User user) {
+        // Get all farm IDs for the user
+        List<Long> farmIds = farmRepository.findByUserId(user.getId()).stream()
+                .map(Farm::getId)
+                .collect(Collectors.toList());
+
+        if (farmIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Get all parcel IDs from user's farms
+        List<Long> parcelIds = parcelRepository.findByFarmIdIn(farmIds).stream()
+                .map(Parcel::getId)
+                .collect(Collectors.toList());
+
+        if (parcelIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Get fertilizations by status for user's parcels
+        return fertilizationRepository.findByStatusAndParcelIdIn(status, parcelIds).stream()
                 .map(fertilizationMapper::toDTO)
                 .collect(Collectors.toList());
     }
