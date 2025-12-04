@@ -219,6 +219,16 @@ public class FertilizationServiceImpl implements FertilizationService {
     }
 
     /**
+     * Get all fertilizations
+     */
+    @Override
+    public List<FertilizationResponseDTO> getAllFertilizations() {
+        return fertilizationRepository.findAll().stream()
+                .map(fertilizationMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Get fertilizations by status
      */
     @Override

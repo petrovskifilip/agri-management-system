@@ -23,6 +23,8 @@ public interface FertilizationService {
 
     List<FertilizationResponseDTO> getFertilizationsByParcel(Long parcelId);
 
+    List<FertilizationResponseDTO> getAllFertilizations();
+
     List<FertilizationResponseDTO> getFertilizationsByStatus(FertilizationStatus status);
 
     List<FertilizationResponseDTO> getFertilizationsByStatusForUser(FertilizationStatus status, User user);

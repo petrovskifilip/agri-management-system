@@ -51,7 +51,7 @@ public class FertilizationController {
 
     @GetMapping
     public ResponseEntity<List<FertilizationResponseDTO>> getAllFertilizations() {
-        return ResponseEntity.ok(fertilizationService.getFertilizationsByStatus(FertilizationStatus.SCHEDULED));
+        return ResponseEntity.ok(fertilizationService.getAllFertilizations());
     }
 
     @GetMapping("/{id}")
