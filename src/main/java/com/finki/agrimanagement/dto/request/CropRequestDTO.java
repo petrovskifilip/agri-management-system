@@ -13,6 +13,8 @@ public class CropRequestDTO {
 
     private Integer fertilizationFrequencyDays;
 
+    private String fertilizerType;
+
     private Integer irrigationFrequencyDays;
 
     private Integer irrigationDurationMinutes;
