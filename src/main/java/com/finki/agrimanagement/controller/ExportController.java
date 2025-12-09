@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/export")
-@CrossOrigin(origins = "*")
 public class ExportController {
 
     private final ExportService exportService;
