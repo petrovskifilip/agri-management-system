@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,8 @@ public class IrrigationServiceImpl implements IrrigationService {
     @Override
     public List<IrrigationResponseDTO> getAllIrrigations() {
         return irrigationRepository.findAll().stream()
+                .sorted(Comparator.comparingInt((Irrigation i) -> getStatusPriority(i.getStatus()))
+                        .thenComparing(Irrigation::getScheduledDatetime))
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -108,6 +111,8 @@ public class IrrigationServiceImpl implements IrrigationService {
     @Override
     public List<IrrigationResponseDTO> getIrrigationsByParcelId(Long parcelId) {
         return irrigationRepository.findByParcelId(parcelId).stream()
+                .sorted(Comparator.comparingInt((Irrigation i) -> getStatusPriority(i.getStatus()))
+                        .thenComparing(Irrigation::getScheduledDatetime))
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -115,6 +120,7 @@ public class IrrigationServiceImpl implements IrrigationService {
     @Override
     public List<IrrigationResponseDTO> getIrrigationsByStatus(IrrigationStatus status) {
         return irrigationRepository.findByStatus(status).stream()
+                .sorted(Comparator.comparing(Irrigation::getScheduledDatetime))
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -124,6 +130,7 @@ public class IrrigationServiceImpl implements IrrigationService {
         return irrigationRepository.findByStatusAndScheduledDatetimeAfter(
                         IrrigationStatus.SCHEDULED, LocalDateTime.now())
                 .stream()
+                .sorted(Comparator.comparing(Irrigation::getScheduledDatetime))
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -154,6 +161,7 @@ public class IrrigationServiceImpl implements IrrigationService {
                         LocalDateTime.now(),
                         parcelIds)
                 .stream()
+                .sorted(Comparator.comparing(Irrigation::getScheduledDatetime))
                 .map(irrigationMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -189,6 +197,21 @@ public class IrrigationServiceImpl implements IrrigationService {
             case FAILED -> "Irrigation execution failed";
             case RETRYING -> "Irrigation retry after a failure";
             case STOPPED -> "Irrigation was stopped manually";
+        };
+    }
+
+    /**
+     * Get priority for irrigation status
+     */
+    private int getStatusPriority(IrrigationStatus status) {
+        return switch (status) {
+            case IN_PROGRESS -> 1;
+            case RETRYING -> 2;
+            case SCHEDULED -> 3;
+            case FAILED -> 4;
+            case STOPPED -> 5;
+            case CANCELLED -> 6;
+            case COMPLETED -> 7;
         };
     }
 }
